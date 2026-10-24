@@ -3,9 +3,6 @@ plugins {
     java
 }
 
-group = "interpreter"
-version = "1.0-SNAPSHOT"
-
 repositories {
     mavenCentral()
 }
@@ -16,12 +13,18 @@ dependencies {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
 application {
-    mainClass.set("interpreter.Main")
+    mainClass = "interpreter.Main"
+}
+
+tasks.named<JavaExec>("run") {
+    standardInput = System.`in`
+    // keyboard input for the text menu
 }
 
 tasks.named<Test>("test") {
