@@ -1,7 +1,5 @@
 package interpreter.model.exp;
 
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 import interpreter.exceptions.ExpressionException;
 import interpreter.exceptions.MyException;
 import interpreter.model.adt.IDictionary;
@@ -9,33 +7,59 @@ import interpreter.model.adt.MyDictionary;
 import interpreter.model.value.BoolValue;
 import interpreter.model.value.IValue;
 import interpreter.model.value.IntValue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class LogicExpTest {
-    private final IDictionary<String, IValue> symTable = new MyDictionary<>();
+    private IDictionary<String, IValue> symTable;
 
-    private static IExp boolExp(boolean b) { return new ValueExp(new BoolValue(b)); }
+    @BeforeEach
+    void setUp() {
+        symTable = new MyDictionary<>();
+    }
 
-    @Test
-    void andEvaluation() throws MyException {
-        IExp e1 = new LogicExp(LogicOp.AND, boolExp(true), boolExp(true));
-        assertEquals(new BoolValue(true), e1.eval(symTable));
-
-        IExp e2 = new LogicExp(LogicOp.AND, boolExp(true), boolExp(false));
-        assertEquals(new BoolValue(false), e2.eval(symTable));
+    private static IExp boolExp(boolean value) {
+        return new ValueExp(new BoolValue(value));
     }
 
     @Test
-    void orEvaluation() throws MyException {
-        IExp e1 = new LogicExp(LogicOp.OR, boolExp(false), boolExp(true));
-        assertEquals(new BoolValue(true), e1.eval(symTable));
+    void andWithTrueOperandsReturnsTrue() throws MyException {
+        IExp exp = new LogicExp(LogicOp.AND, boolExp(true), boolExp(true));
 
-        IExp e2 = new LogicExp(LogicOp.OR, boolExp(false), boolExp(false));
-        assertEquals(new BoolValue(false), e2.eval(symTable));
+        assertEquals(new BoolValue(true), exp.eval(symTable));
     }
 
     @Test
-    void nonBooleanThrows() {
-        IExp e = new LogicExp(LogicOp.AND, new ValueExp(new IntValue(1)), boolExp(true));
-        assertThrows(ExpressionException.class, () -> e.eval(symTable));
+    void andWithFalseOperandReturnsFalse() throws MyException {
+        IExp exp = new LogicExp(LogicOp.AND, boolExp(true), boolExp(false));
+
+        assertEquals(new BoolValue(false), exp.eval(symTable));
+    }
+
+    @Test
+    void orWithTrueOperandReturnsTrue() throws MyException {
+        IExp exp = new LogicExp(LogicOp.OR, boolExp(false), boolExp(true));
+
+        assertEquals(new BoolValue(true), exp.eval(symTable));
+    }
+
+    @Test
+    void orWithFalseOperandsReturnsFalse() throws MyException {
+        IExp exp = new LogicExp(LogicOp.OR, boolExp(false), boolExp(false));
+
+        assertEquals(new BoolValue(false), exp.eval(symTable));
+    }
+
+    @Test
+    void nonBooleanOperandThrows() {
+        IExp exp = new LogicExp(
+                LogicOp.AND,
+                new ValueExp(new IntValue(1)),
+                boolExp(true)
+        );
+
+        assertThrows(ExpressionException.class, () -> exp.eval(symTable));
     }
 }
