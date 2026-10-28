@@ -12,12 +12,6 @@ dependencies {
     testImplementation("org.junit.platform:junit-platform-launcher")
 }
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-}
-
 application {
     mainClass = "interpreter.Main"
 }
