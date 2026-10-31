@@ -1,5 +1,7 @@
 package interpreter.model.adt;
 
+import interpreter.exceptions.ADTException;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -13,7 +15,10 @@ public class MyDictionary<K, V> implements IDictionary<K, V> {
     }
 
     @Override
-    public V lookup(K key) {
+    public V lookup(K key) throws ADTException {
+        if (!isDefined(key)) {
+            throw new ADTException("key " + key + " is not defined");
+        }
         return map.get(key);
     }
 
@@ -23,8 +28,24 @@ public class MyDictionary<K, V> implements IDictionary<K, V> {
     }
 
     @Override
-    public void update(K key, V value) {
+    public void update(K key, V value) throws ADTException {
+        if (!isDefined(key)) {
+            throw new ADTException("key " + key + " is not defined");
+        }
         map.put(key, value);
+    }
+
+    @Override
+    public void remove(K key) throws ADTException {
+        if (!isDefined(key)) {
+            throw new ADTException("key " + key + " is not defined");
+        }
+        map.remove(key);
+    }
+
+    @Override
+    public Map<K, V> toMap() {
+        return Map.copyOf(map);
     }
 
     @Override

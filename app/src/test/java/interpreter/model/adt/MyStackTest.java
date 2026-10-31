@@ -4,6 +4,8 @@ import interpreter.exceptions.ADTException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class MyStackTest {
@@ -28,5 +30,17 @@ class MyStackTest {
     @Test
     void popOnEmptyStackThrows() {
         assertThrows(ADTException.class, () -> stack.pop());
+    }
+
+    @Test
+    void toListReturnsTopOfTheStackFirst() {
+        stack.push(10);
+        stack.push(20);
+        stack.push(30);
+
+        List<Integer> list = stack.toList();
+        assertEquals(3, list.size());
+        assertEquals(List.of(30, 20, 10), list);
+        assertEquals(30, list.get(0));
     }
 }
