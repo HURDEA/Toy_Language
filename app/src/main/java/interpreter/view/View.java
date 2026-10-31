@@ -15,7 +15,7 @@ public class View {
     public void start() {
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            System.out.println("\n--- Toy Interpreter Menu ---");
+            System.out.println("\n Toy Interpreter Menu ");
             System.out.println("1. Example 1: " + Examples.EX1);
             System.out.println("2. Example 2: " + Examples.EX2);
             System.out.println("3. Example 3: " + Examples.EX3);
