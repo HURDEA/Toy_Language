@@ -3,8 +3,11 @@ package interpreter.model;
 import interpreter.exceptions.ADTException;
 import interpreter.model.adt.IDictionary;
 import interpreter.model.adt.MyDictionary;
+import interpreter.model.adt.MyList;
+import interpreter.model.adt.MyStack;
 import interpreter.model.stmt.IStmt;
 import interpreter.model.stmt.NopStmt;
+import interpreter.model.value.IntValue;
 import interpreter.model.value.StringValue;
 import org.junit.jupiter.api.Test;
 
@@ -57,5 +60,35 @@ class PrgStateTest {
         assertTrue(output.contains("SymTable:"));
         assertTrue(output.contains("Out:"));
         assertTrue(output.contains("FileTable:"));
+    }
+
+    @Test
+    void toLogStringFormatsEmptyStateCorrectly() throws ADTException {
+        PrgState state = PrgState.of(new NopStmt());
+        state.getExeStack().pop();
+        String expected = "ExeStack:\n" +
+                "SymTable:\n" +
+                "Out:\n" +
+                "FileTable:\n";
+        assertEquals(expected, state.toLogString());
+    }
+
+    @Test
+    void toLogStringFormatsPopulatedStateCorrectly() {
+        IStmt stmt = new NopStmt();
+        PrgState state = PrgState.of(stmt);
+        state.getSymTable().put("x", new IntValue(10));
+        state.getOut().add(new IntValue(42));
+        state.getFileTable().put(new StringValue("test.in"), new BufferedReader(new StringReader("")));
+
+        String expected = "ExeStack:\n" +
+                stmt + "\n" +
+                "SymTable:\n" +
+                "x --> 10\n" +
+                "Out:\n" +
+                "42\n" +
+                "FileTable:\n" +
+                "test.in\n";
+        assertEquals(expected, state.toLogString());
     }
 }
