@@ -9,13 +9,20 @@ import interpreter.model.value.IntValue;
 import interpreter.repository.Repository;
 import interpreter.view.Examples;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ControllerTest {
+    @TempDir
+    static Path tempDir;
+
     private static PrgState run(IStmt program) throws MyException {
         PrgState state = PrgState.of(program);
-        new Controller(new Repository(state), false).allStep();
+        String logPath = tempDir.resolve("test_log.txt").toString();
+        new Controller(new Repository(state, logPath), false).allStep();
         return state;
     }
 

@@ -18,6 +18,7 @@ application {
 
 tasks.named<JavaExec>("run") {
     standardInput = System.`in`
+    workingDir = rootDir
     // keyboard input for the text menu
 }
 
