@@ -11,15 +11,18 @@ import interpreter.view.Examples;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ControllerTest {
     @TempDir
-    static Path tempDir;
+    Path tempDir;
 
-    private static PrgState run(IStmt program) throws MyException {
+    private PrgState run(IStmt program) throws MyException {
         PrgState state = PrgState.of(program);
         String logPath = tempDir.resolve("test_log.txt").toString();
         new Controller(new Repository(state, logPath), false).allStep();
@@ -61,5 +64,37 @@ class ControllerTest {
         Controller controller = new Controller(new Repository(state), false);
 
         assertThrows(StatementException.class, () -> controller.oneStep(state));
+    }
+
+    @Test
+    void fileExampleReadsBothNumbersAndClosesTheFile() throws IOException, MyException {
+        Path input = tempDir.resolve("test.in");
+        Files.writeString(input, "15\n50\n");
+
+        PrgState state = run(Examples.fileExample(input.toString()));
+
+        assertEquals(List.of(new IntValue(15), new IntValue(50)), state.getOut().toList());
+        assertTrue(state.getFileTable().toMap().isEmpty());
+    }
+
+    @Test
+    void example5PrintsTheSmallerValue() throws MyException {
+        PrgState state = run(Examples.EX5);
+
+        assertEquals(List.of(new IntValue(5)), state.getOut().toList());
+    }
+
+    @Test
+    void logContainsTheFourStateSectionsInOrder() throws MyException, IOException {
+        run(Examples.EX1);
+
+        String log = Files.readString(tempDir.resolve("test_log.txt"));
+        int executionStack = log.indexOf("ExeStack:\n");
+        int symbolTable = log.indexOf("SymTable:\n");
+        int output = log.indexOf("Out:\n");
+        int fileTable = log.indexOf("FileTable:\n");
+
+        assertTrue(0 <= executionStack && executionStack < symbolTable);
+        assertTrue(symbolTable < output && output < fileTable);
     }
 }
